@@ -1,49 +1,34 @@
 export const annotate = matrix => {
-  let annotatedMatrix = [...matrix.map(el => el.split(''))]
+  if (matrix.length === 0) {
+    return []
+  }
+
   const MINE = '*'
+  const annotatedMatrix = matrix.map(row => row.split(''))
 
   for (let rowIdx = 0; rowIdx < matrix.length; rowIdx++) {
-    for (let columnIdx = 0; columnIdx < matrix[0].length; columnIdx++) {
-
-      if (matrix[rowIdx][columnIdx] === MINE) {
-        continue
-      }
-
-      let mineCount = 0
-
-      const top = matrix[rowIdx - 1] && matrix[rowIdx - 1][columnIdx]
-      const topRight = matrix[rowIdx - 1] && matrix[rowIdx - 1][columnIdx + 1]
-      const right = matrix[rowIdx][columnIdx + 1]
-      const bottomRight =
-        matrix[rowIdx + 1] && matrix[rowIdx + 1][columnIdx + 1]
-      const bottom = matrix[rowIdx + 1] && matrix[rowIdx + 1][columnIdx]
-      const bottomLeft = matrix[rowIdx + 1] && matrix[rowIdx + 1][columnIdx - 1]
-      const left = matrix[rowIdx][columnIdx - 1]
-      const topLeft = matrix[rowIdx - 1] && matrix[rowIdx - 1][columnIdx - 1]
-
-      const adjacentCells = [
-        top,
-        topRight,
-        right,
-        bottomRight,
-        bottom,
-        bottomLeft,
-        left,
-        topLeft,
-      ]
-
-      adjacentCells.forEach(cell => {
-        if (cell === MINE) {
-          mineCount++
+    for (let colIdx = 0; colIdx < matrix[rowIdx].length; colIdx++) {
+      if (matrix[rowIdx][colIdx] !== MINE) {
+        const mineCount = getAdjacentMinesCount(matrix, rowIdx, colIdx)
+        if (mineCount > 0) {
+          annotatedMatrix[rowIdx][colIdx] = String(mineCount)
         }
-      })
-
-      if (mineCount > 0) {
-        annotatedMatrix[rowIdx][columnIdx] = mineCount
       }
     }
   }
 
-  annotatedMatrix = annotatedMatrix.map(row => row.join(''))
-  return annotatedMatrix
+  return annotatedMatrix.map(row => row.join(''))
+}
+
+const getAdjacentMinesCount = (matrix, rowIdx, colIdx) => {
+  const MINE = '*'
+  let mineCount = 0
+  for (let row = rowIdx - 1; row <= rowIdx + 1; row++) {
+    for (let col = colIdx - 1; col <= colIdx + 1; col++) {
+      if (matrix[row]?.[col] === MINE) {
+        mineCount++
+      }
+    }
+  }
+  return mineCount
 }
